@@ -4,12 +4,15 @@ var express = require('express');
 
 var app = express();
 
-var io = require('socket.io')(http); //this is the format socket.io expect
+
 
 //build in build module
 //this is telling node that start a new server and use the express app as boiler plate, anything express listens, this server will listen, too
 
 var http = require('http').Server(app);
+
+
+var io = require('socket.io')(http); //this is the format socket.io expect
 
 //expose the static folder
 app.use(express.static(__dirname + '/public'));
