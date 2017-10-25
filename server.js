@@ -25,7 +25,9 @@ io.on('connection', function(socket){
 
 		//now to send out the msage
 		//broadcast.emit will send this to everyone but the sender
-		socket.broadcast.emit('message', message);
+		//socket.broadcast.emit('message', message);
+		//io.emit will send msg to everyone
+		io.emit('message', message);
 	}); //this is now making the server listening to socket msg
 	socket.emit('message', {
 		text : 'Welcome to the chat'
