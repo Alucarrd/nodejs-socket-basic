@@ -4,7 +4,9 @@ var express = require('express');
 
 var app = express();
 
+var moment = require('moment');
 
+var now = moment();
 
 //build in build module
 //this is telling node that start a new server and use the express app as boiler plate, anything express listens, this server will listen, too
@@ -27,10 +29,14 @@ io.on('connection', function(socket){
 		//broadcast.emit will send this to everyone but the sender
 		//socket.broadcast.emit('message', message);
 		//io.emit will send msg to everyone
+		if(!message.timestamp)
+			message.timestamp = now.valueOf();
+
 		io.emit('message', message);
 	}); //this is now making the server listening to socket msg
 	socket.emit('message', {
-		text : 'Welcome to the chat'
+		text : 'Welcome to the chat',
+		timestamp: now.valueOf()
 	}); //emit an event, which takes one parameter value.  So its' better to pass in a javascript object
 
 

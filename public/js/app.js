@@ -1,5 +1,5 @@
 var socket = io();
-
+	
 socket.on('connect', function(){
 	console.log('connected to socket io server now');
 });
@@ -7,10 +7,13 @@ socket.on('connect', function(){
 
 socket.on('message', function(message){
 	//this will fire everytime msg comes 
+	console.log(message.timestamp);
+	var momentTimeStamp = moment.utc(message.timestamp);
+	console.log(momentTimeStamp);
 	console.log('new message');
 	console.log(message.text);
 	//.message is the find for jquery to look for class
-	jQuery('.messages').append('<p>' + message.text + '</p>');
+	jQuery('.messages').append('<p><strong>' + momentTimeStamp.local().format('M/D/YYYY H:mma') + "</strong>: " + message.text + '</p>');
 
 });
 
