@@ -35,6 +35,7 @@ io.on('connection', function(socket){
 		io.emit('message', message);
 	}); //this is now making the server listening to socket msg
 	socket.emit('message', {
+		name : 'System',
 		text : 'Welcome to the chat',
 		timestamp: now.valueOf()
 	}); //emit an event, which takes one parameter value.  So its' better to pass in a javascript object

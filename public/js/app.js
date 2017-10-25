@@ -1,19 +1,32 @@
 var socket = io();
-	
+var room = getQueryVariable('room') || 'chat';
+var name = getQueryVariable('name') || 'Peter';
+
+
 socket.on('connect', function(){
 	console.log('connected to socket io server now');
+	socket.emit('message', {
+		name : 'System',
+		text : name + ' joined ' + room + ' now'
+
+	})
 });
 
 
 socket.on('message', function(message){
 	//this will fire everytime msg comes 
 	console.log(message.timestamp);
+
 	var momentTimeStamp = moment.utc(message.timestamp);
+	var $message = jQuery('.messages');
+	$message.append('<p><strong>' + message.name + ' ' + momentTimeStamp.local().format('M/D/YYYY H:mma') + '</strong></p>');
+	$message.append('<p>' + message.text + '</p>');
+	
 	console.log(momentTimeStamp);
 	console.log('new message');
 	console.log(message.text);
 	//.message is the find for jquery to look for class
-	jQuery('.messages').append('<p><strong>' + momentTimeStamp.local().format('M/D/YYYY H:mma') + "</strong>: " + message.text + '</p>');
+	
 
 });
 
@@ -28,6 +41,7 @@ $form.on('submit', function(event){
 	//the syntax for find is element[attribute=value]
 	//for the below example, we are looking for input element with name attribute that has value of "message"
 	socket.emit('message', {
+		name : name,
 		text : $message.val()
 	})
 	$message.val('');
