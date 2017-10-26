@@ -2,14 +2,16 @@ var socket = io();
 var room = getQueryVariable('room') || 'chat';
 var name = getQueryVariable('name') || 'Peter';
 
+//update h1 tag
+jQuery('.room-title').text(room);
 
 socket.on('connect', function(){
 	console.log('connected to socket io server now');
-	socket.emit('message', {
-		name : 'System',
-		text : name + ' joined ' + room + ' now'
-
-	})
+	socket.emit('jointRoom' , {
+		name: name,
+		room: room
+	});
+	
 });
 
 

@@ -5,7 +5,7 @@ function getQueryVariable(variable){
 	for (var i = 0; i < vars.length; i++){
 		var pairs = vars[i].split('=');
 		if(decodeURIComponent(pairs[0]) == variable){
-			return decodeURIComponent(pairs[1]);
+			return decodeURIComponent(pairs[1]).replace(/\+/g, ' ');
 		}
 
 	}

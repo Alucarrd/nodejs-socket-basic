@@ -19,9 +19,22 @@ var io = require('socket.io')(http); //this is the format socket.io expect
 //expose the static folder
 app.use(express.static(__dirname + '/public'));
 
+var clientInfo = {};
+
 //on will let you listen for event, now it's listening to connection event
 io.on('connection', function(socket){
 	//we get access to individual socket on the server 
+
+
+	socket.on('joinRoom', function(req){
+		clientInfo[socket.id] = req;
+		socket.join(req.room);
+		socket.broadcast.to(req.room).emit({'message', {
+			name: 'System',
+			text: req.name + ' had joined!',
+			timestamp = moment().valueOf()
+		}})
+	});
 	socket.on('message', function(message){
 		console.log('message received:' + message.text);
 
@@ -32,7 +45,7 @@ io.on('connection', function(socket){
 		if(!message.timestamp)
 			message.timestamp = now.valueOf();
 
-		io.emit('message', message);
+		io.to(clientInfo[socket.id].room).emit('message', message);
 	}); //this is now making the server listening to socket msg
 	socket.emit('message', {
 		name : 'System',
