@@ -21,32 +21,87 @@ app.use(express.static(__dirname + '/public'));
 
 var clientInfo = {};
 
+//send current users to provided socket
+function sendCurrentUsers(vSocket){
+	var userData = clientInfo[vSocket.id];
+	var users = [];
+
+	if(typeof userData === undefined){
+		return;
+	}
+	Object.keys(clientInfo).forEach(function(socketId){
+		var userInfo = clientInfo[socketId];
+		if(info.room === userInfo.room){
+			users.push(userInfo.name);
+		}
+
+	});
+	socket.emit('message', {
+		name: 'System',
+		text: 'Current users:' + users.join(','),
+		timestamp: moment().valueOf()
+	});
+
+}
+
 //on will let you listen for event, now it's listening to connection event
 io.on('connection', function(socket){
 	//we get access to individual socket on the server 
+	//disconnect is a built in socket.io event, so you can't pick any name
 
+	socket.on('disconnect', function(){
+console.log('disconnecting');
+		var userData = clientInfo[socket.id];
+		//check to see if there's data for this user
+		if(typeof userData !== undefined){
+			
+			socket.leave(userData.room);//leaving the room
+			io.to(userData.room).emit('message', {
+				name: 'System',
+				text: userData.name + ' has left...',
+				timestamp: moment().valueOf
+			});
+			delete clientInfo[socket.id];
+		}
+	});
 
 	socket.on('joinRoom', function(req){
 		clientInfo[socket.id] = req;
 		socket.join(req.room);
-		socket.broadcast.to(req.room).emit({'message', {
+		socket.broadcast.to(req.room).emit('message', {
 			name: 'System',
 			text: req.name + ' had joined!',
-			timestamp = moment().valueOf()
-		}})
+			timestamp : moment().valueOf()
+		});
 	});
+
+
 	socket.on('message', function(message){
 		console.log('message received:' + message.text);
+
+
+		//time to setup custom command
+
+
+		if(message.text === '@currentUsers')
+		{
+			sendCurrentUsers(socket);
+		}else
+		{
+			message.timestamp = moment().valueOf();
+
+			io.to(clientInfo[socket.id].room).emit('message', message);
+		}
+
 
 		//now to send out the msage
 		//broadcast.emit will send this to everyone but the sender
 		//socket.broadcast.emit('message', message);
 		//io.emit will send msg to everyone
-		if(!message.timestamp)
-			message.timestamp = now.valueOf();
-
-		io.to(clientInfo[socket.id].room).emit('message', message);
-	}); //this is now making the server listening to socket msg
+		
+		
+	});
+	 //this is now making the server listening to socket msg
 	socket.emit('message', {
 		name : 'System',
 		text : 'Welcome to the chat',

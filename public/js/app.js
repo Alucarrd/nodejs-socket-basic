@@ -7,12 +7,14 @@ jQuery('.room-title').text(room);
 
 socket.on('connect', function(){
 	console.log('connected to socket io server now');
-	socket.emit('jointRoom' , {
+	socket.emit('joinRoom' , {
 		name: name,
 		room: room
 	});
 	
 });
+
+
 
 
 socket.on('message', function(message){
